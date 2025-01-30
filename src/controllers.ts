@@ -1,8 +1,7 @@
-import { PrismaClient, Task } from '@prisma/client';
+import { Task } from '@prisma/client';
 import { Request, Response } from 'express';
 import { validStatus } from './utils';
-
-const prisma = new PrismaClient();
+import prisma from './db/prisma';
 
 async function getTask(req: Request, res: Response): Promise<void> {
   const { id } = req.params;
@@ -13,11 +12,9 @@ async function getTask(req: Request, res: Response): Promise<void> {
     });
 
     if (!task) {
-      res
-        .status(404)
-        .json({
-          error: 'task could not be found with this specific id: ' + id,
-        });
+      res.status(404).json({
+        error: 'task could not be found with this specific id: ' + id,
+      });
       return;
     }
 
@@ -28,8 +25,14 @@ async function getTask(req: Request, res: Response): Promise<void> {
 }
 
 async function listTasks(req: Request, res: Response): Promise<void> {
+  const { status } = req.query;
+
   try {
-    const tasks = await prisma.task.findMany();
+    const tasks = await prisma.task.findMany({
+      where: {
+        status: status?.toString(),
+      },
+    });
     res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ error: 'Error, could not be listed' });
@@ -102,11 +105,9 @@ async function deleteTask(req: Request, res: Response): Promise<void> {
     });
 
     if (!task) {
-      res
-        .status(404)
-        .json({
-          error: 'task could not be found with this specific id: ' + id,
-        });
+      res.status(404).json({
+        error: 'task could not be found with this specific id: ' + id,
+      });
       return;
     }
     await prisma.task.delete({
