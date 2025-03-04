@@ -25,12 +25,20 @@ async function getTask(req: Request, res: Response): Promise<void> {
 }
 
 async function listTasks(req: Request, res: Response): Promise<void> {
-  const { status } = req.query;
+  const { status, search } = req.query;
 
   try {
     const tasks = await prisma.task.findMany({
       where: {
         status: status?.toString(),
+        OR: [
+          {
+            title: {
+              contains: search?.toString(),
+              mode: 'insensitive',
+            },
+          },
+        ]
       },
     });
     res.status(200).json(tasks);
