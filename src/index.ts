@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // const origin = process.env.NODE_ENV === 'production' ? 'https://yourapp.com' : 'http://localhost:3000';
-const origins = ['http://localhost:3000', 'http://54.210.97.220'];
+const origins = ['http://localhost:3000', 'http://54.210.97.220:3000'];
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
